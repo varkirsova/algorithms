@@ -95,3 +95,21 @@ class BinaryTree:
                 successor_parent.left = successor.right
             else:
                 successor_parent.right = successor.right
+
+    def find_min(self):
+        if self.root is None:
+            return None
+
+        node = self.root
+        while node.left:
+            node = node.left
+        return node.value
+
+    def find_max(self):
+        if self.root is None:
+            return None
+
+        node = self.root
+        while node.right:
+            node = node.right
+        return node.value
