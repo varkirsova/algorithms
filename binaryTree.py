@@ -4,6 +4,13 @@ class Node:
         self.left = None
         self.right = None
 
+class NodeAVL:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+        self.height = 1
+
 class BinaryTree:
     def __init__(self):
         self.root = None
@@ -167,3 +174,48 @@ class BinaryTree:
                 queue.append(cur.right)
 
         return res
+
+# класс АВЛ дерева со всеми функциями из BST,только вставка и удаление свои
+class AVLTree(BinaryTree):
+    def __init__(self):
+        super().__init__()
+
+    # доп функции (получение и обновление высоты, получения баланса, левый и правый поворот)
+    def get_height(self, node):
+        if not node:
+            return 0
+        return node.height
+
+    def new_height(self, node):
+        if node:
+            node.height = 1 + max(self.get_height(node.left), self.get_height(node.right))
+
+    def get_balance(self, node):
+        if not node:
+            return 0
+        return self.get_height(node.left) - self.get_height(node.right)
+
+    def left_rotate(self, old_root):
+        new_root = old_root.right
+        subtree_between = new_root.left
+
+        new_root.left = old_root
+        old_root.right = subtree_between
+
+        self.new_height(old_root)
+        self.new_height(new_root)
+
+        return new_root
+
+    def rotate_right(self, old_root):
+        new_root = old_root.left
+        subtree_between = new_root.right
+
+        new_root.right = old_root
+        old_root.left = subtree_between
+
+        self.new_height(old_root)
+        self.new_height(new_root)
+
+        return new_root
+
