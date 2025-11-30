@@ -141,9 +141,9 @@ class BinaryTree:
 
     def _in_order(self, node):
         if node:
-            self._pre_order(node.left)
+            self._in_order(node.left)
             print(node.value)
-            self._pre_order(node.right)
+            self._in_order(node.right)
 
     # обратный обход(левое поддерево, правое поддерево, корень)
     def post_order(self):
@@ -151,8 +151,8 @@ class BinaryTree:
 
     def _post_order(self, node):
         if node:
-            self._pre_order(node.left)
-            self._pre_order(node.right)
+            self._post_order(node.left)
+            self._post_order(node.right)
             print(node.value)
 
     # обход в ширину
@@ -195,7 +195,7 @@ class AVLTree(BinaryTree):
             return 0
         return self.get_height(node.left) - self.get_height(node.right)
 
-    def left_rotate(self, old_root):
+    def small_left_rotate(self, old_root):
         new_root = old_root.right
         subtree_between = new_root.left
 
@@ -207,7 +207,7 @@ class AVLTree(BinaryTree):
 
         return new_root
 
-    def rotate_right(self, old_root):
+    def small_right_rotate(self, old_root):
         new_root = old_root.left
         subtree_between = new_root.right
 
@@ -219,3 +219,87 @@ class AVLTree(BinaryTree):
 
         return new_root
 
+    # вставка AVL
+    def insert(self, value):
+        self.root = self._insertAVL(self.root, value)
+
+    def _insertAVL(self, node, value):
+        if node is None:
+            return NodeAVL(value)
+        if value < node.value:
+            node.left = self._insertAVL(node.left, value)
+        elif value > node.value:
+            node.right = self._insertAVL(node.right, value)
+        else:
+            return node
+
+        self.new_height(node)
+        balance = self.get_balance(node)
+
+        # малый левый
+        if balance < -1 and value > node.right.value:
+            return self.small_left_rotate(node)
+
+        # малый правый
+        if balance > 1 and value < node.left.value:
+            return self.small_right_rotate(node)
+
+        # большой левый
+        if balance < -1 and value < node.right.value:
+            node.right = self.small_right_rotate(node.right)
+            return self.small_left_rotate(node)
+
+        # бошльшой правый
+        if balance > 1 and value > node.left.value:
+            node.left = self.small_left_rotate(node.left)
+            return self.small_right_rotate(node)
+
+        return node
+
+    # удаление AVL
+    def delete(self, value):
+        self.root = self._deleteAVL(self.root, value)
+
+    def _deleteAVL(self, node, value):
+        if node is None:
+            return node
+        if value < node.value:
+            node.left = self._deleteAVL(node.left, value)
+        elif value > node.value:
+            node.right = self._deleteAVL(node.right, value)
+        else:
+            if node.left is None:
+                return node.right
+            elif node.right is None:
+                return node.left
+            successor = node.right
+            while successor.left:
+                successor = successor.left
+            node.value = successor.value
+            node.right = self._deleteAVL(node.right, successor.value)
+
+        if node is None:
+            return node
+
+        self.new_height(node)
+        balance = self.get_balance(node)
+
+        # малый левый
+        if balance < -1 and self.get_balance(node.right) <= 0:
+            return self.small_left_rotate(node)
+
+        # малый правый
+        if balance > 1 and self.get_balance(node.left) >= 0:
+            return self.small_right_rotate(node)
+
+        # большой левый
+        if balance < -1 and self.get_balance(node.right) > 0:
+            node.right = self.small_right_rotate(node.right)
+            return self.small_left_rotate(node)
+
+        # большой правый
+        if balance > 1 and self.get_balance(node.left) < 0:
+            node.left = self.small_left_rotate(node.left)
+            return self.small_right_rotate(node)
+
+        return node
