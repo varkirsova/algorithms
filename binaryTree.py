@@ -359,6 +359,86 @@ class RBTree(BinaryTree):
 
     # вставка red-black
     def insert(self, value):
+        if self.root is None:
+            self.root = NodeRB(value)
+            self.balance_insertRB(self.root)
+            return
+
+        node = self.root
+        parent = None
+        while node:
+            parent = node
+            if value < node.value:
+                node = node.left
+            elif value > node.value:
+                node = node.right
+            else:
+                return
+        new_node = NodeRB(value)
+        if value < parent.value:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+
+        new_node.parent = parent
+        self.balance_insertRB(new_node)
 
 
+    def balance_insertRB(self, new_node):
+        # 0 вставка корня
+        if new_node.parent is None:
+            new_node.colour = 'B'
+            return
 
+        while new_node.parent is not None and self.is_red(new_node.parent):
+            parent = new_node.parent
+            grandfather = parent.parent
+
+            # родитель левый ребенок деда
+            if parent == grandfather.left:
+                uncle = grandfather.right
+
+                # 1 красный дядя
+                if self.is_red(uncle):
+                    parent.colour = 'B'
+                    uncle.colour = 'B'
+                    grandfather.colour = 'R'
+                    new_node = grandfather
+
+                # 2 чёрный дядя, узел - правый ребёнок родителя, родитель - левый ребенок дедушки
+                else:
+                    if new_node == parent.right:
+                        new_node = parent
+                        self.small_left_rotate(new_node)
+                        parent = new_node.parent
+
+                    # 3 чёрный дядя, узел - левый ребёнок родителя, родитель - левый ребенок дедушки
+                    grandfather.colour = 'R'
+                    parent.colour = 'B'
+                    self.small_right_rotate(grandfather)
+                    break
+
+            # родитель правый ребенок деда
+            else:
+                uncle = grandfather.left
+                # 1 красный дядя
+                if self.is_red(uncle):
+                    parent.colour = 'B'
+                    uncle.colour = 'B'
+                    grandfather.colour = 'R'
+                    new_node = grandfather
+
+                # 2 чёрный дядя, узел - левый ребёнок родителя, родитель - левый ребенок дедушки
+                else:
+                    if new_node == parent.left:
+                        new_node = parent
+                        self.small_right_rotate(new_node)
+                        parent = new_node.parent
+
+                    # 3 чёрный дядя, узел - правый ребёнок родителя, родитель - левый ребенок дедушки
+                    grandfather.colour = 'R'
+                    parent.colour = 'B'
+                    self.small_left_rotate(grandfather)
+                    break
+
+        self.root.colour = 'B'
