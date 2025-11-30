@@ -11,6 +11,14 @@ class NodeAVL:
         self.right = None
         self.height = 1
 
+class NodeRB:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+        self.parent = None
+        self.colour = 'R'
+
 class BinaryTree:
     def __init__(self):
         self.root = None
@@ -303,3 +311,54 @@ class AVLTree(BinaryTree):
             return self.small_right_rotate(node)
 
         return node
+
+class RBTree(BinaryTree):
+    def __init__(self):
+        super().__init__()
+
+    def is_black(self, node):
+        return node is None or node.colour == 'B'
+
+    def is_red(self, node):
+        return node is not None and node.colour == 'R'
+
+    def small_left_rotate(self, old_root):
+        new_root = old_root.right
+        subtree_between = new_root.left
+        old_root.right = subtree_between
+        if subtree_between:
+            subtree_between.parent = old_root
+
+        new_root.parent = old_root.parent
+        if old_root.parent is None:
+            self.root = new_root
+        elif old_root == old_root.parent.left:
+            old_root.parent.left = new_root
+        else:
+            old_root.parent.right = new_root
+        new_root.left = old_root
+        old_root.parent = new_root
+
+    def small_right_rotate(self, old_root):
+        new_root = old_root.left
+        subtree_between = new_root.right
+        old_root.left = subtree_between
+        if subtree_between:
+            subtree_between.parent = old_root
+
+        new_root.parent = old_root.parent
+        if old_root.parent is None:
+            self.root = new_root
+        elif old_root == old_root.parent.right:
+            old_root.parent.right = new_root
+        else:
+            old_root.parent.left = new_root
+
+        new_root.right = old_root
+        old_root.parent = new_root
+
+    # вставка red-black
+    def insert(self, value):
+
+
+
