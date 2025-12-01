@@ -4,12 +4,14 @@ class Node:
         self.left = None
         self.right = None
 
+
 class NodeAVL:
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
         self.height = 1
+
 
 class NodeRB:
     def __init__(self, value):
@@ -18,6 +20,7 @@ class NodeRB:
         self.right = None
         self.parent = None
         self.colour = 'R'
+
 
 class BinaryTree:
     def __init__(self):
@@ -138,10 +141,9 @@ class BinaryTree:
 
     def _pre_order(self, node):
         if node:
-            print(node.value)
+            print(node.value, end=" ")
             self._pre_order(node.left)
             self._pre_order(node.right)
-
 
     # центрированный обход(левое поддерево, корень, правое поддерево)
     def in_order(self):
@@ -150,7 +152,7 @@ class BinaryTree:
     def _in_order(self, node):
         if node:
             self._in_order(node.left)
-            print(node.value)
+            print(node.value, end=" ")
             self._in_order(node.right)
 
     # обратный обход(левое поддерево, правое поддерево, корень)
@@ -161,27 +163,25 @@ class BinaryTree:
         if node:
             self._post_order(node.left)
             self._post_order(node.right)
-            print(node.value)
+            print(node.value, end=" ")
 
     # обход в ширину
     def breadth_search(self):
         return self._breadth_search(self.root)
 
     def _breadth_search(self, node):
-        res = []
         if node is None:
-            return res
+            return
         queue = [node]
 
         while queue:
             cur = queue.pop(0)
-            res.append(cur.value)
+            print(cur.value, end=" ")
             if cur.left:
                 queue.append(cur.left)
             if cur.right:
                 queue.append(cur.right)
 
-        return res
 
 # класс АВЛ дерева со всеми функциями из BST,только вставка и удаление свои
 class AVLTree(BinaryTree):
@@ -442,3 +442,143 @@ class RBTree(BinaryTree):
                     break
 
         self.root.colour = 'B'
+
+    # доп функция для удаления
+    def replace_node(self, old, new):
+        if old.parent is None:
+            self.root = new
+        elif old == old.parent.left:
+            old.parent.left = new
+        else:
+            old.parent.right = new
+        if new is not None:
+            new.parent = old.parent
+
+    def delete(self, value):
+        node = self.root
+        parent = None
+
+        while node and node.value != value:
+            parent = node
+            if value < node.value:
+                node = node.left
+            else:
+                node = node.right
+
+        if node is None:
+            return
+
+        orig_colour = node.colour
+        orig_parent = node.parent
+
+        # 0 - дети - черные псевдоузлы
+        if node.left is None and node.right is None:
+            child = None
+            self.replace_node(node, child)
+
+        # 1 - левый ребёнок - поддерево из более чем одного узла, а правый является черным псевдоузлом
+        elif node.right is None:
+            child = node.left
+            self.replace_node(node, child)
+
+        # 2 - правый ребёнок - поддерево из более чем одного узла, а левый является черным псевдоузлом
+        elif node.left is None:
+            child = node.right
+            self.replace_node(node, child)
+
+        # 3 - оба ребёнка
+        else:
+            successor = node.right
+            while successor.left is not None:
+                successor = successor.left
+
+            node.value = successor.value
+            orig_colour = successor.colour
+            orig_parent = successor.parent
+
+            if successor.right is not None:
+                child = successor.right
+                self.replace_node(successor, successor.right)
+            else:
+                child = None
+                self.replace_node(successor, None)
+            if orig_colour == 'B':
+                self.balance_delete(child, orig_parent)
+
+    def balance_delete(self, double_black, parent):
+        while double_black != self.root and (double_black is None or double_black.colour == 'B'):
+            # двойной черный - левый ребенок
+            if parent is not None and double_black == parent.left:
+                brother = parent.right
+                # 1 - брат красный
+                if self.is_red(brother):
+                    brother.colour = 'B'
+                    parent.colour = 'R'
+                    self.small_left_rotate(parent)
+                    brother = parent.right
+
+                # 2 - брат чёрный, оба ребёнка брата чёрные
+                elif brother is not None and self.is_black(brother) and (self.is_black(brother.left) and self.is_black(brother.right)):
+                    if brother is not None:
+                        brother.colour = 'R'
+                    double_black = parent
+                    if double_black is None:
+                        parent = None
+                    else:
+                        parent = double_black.parent
+
+                # 3 - брат чёрный, левый ребёнок брата — красный, правый — чёрный
+                else:
+                    if brother is not None and self.is_black(brother.right) and self.is_red(brother.left):
+                        brother.left.colour = 'B'
+                        brother.colour = 'R'
+                        self.small_right_rotate(brother)
+                        brother = parent.right
+
+                    # 4 - брат чёрный, правый ребёнок брата — красный
+                    if brother is not None and self.is_red(brother.right):
+                        brother.colour = parent.colour
+                        parent.colour = 'B'
+                        brother.right.colour = 'B'
+                        self.small_left_rotate(parent)
+                        double_black = self.root
+
+            # двойной черный - правый ребенок
+            else:
+                brother = parent.left
+                # 1 - брат красный
+                if self.is_red(brother):
+                    brother.colour = 'B'
+                    parent.colour = 'R'
+                    self.small_right_rotate(parent)
+                    brother = parent.left
+
+                # 2 - брат чёрный, оба ребёнка брата чёрные
+                elif brother is not None and self.is_black(brother) and (
+                        self.is_black(brother.left) and self.is_black(brother.right)):
+                    brother.colour = 'R'
+                    double_black = parent
+                    if double_black is None:
+                        parent = None
+                    else:
+                        parent = double_black.parent
+
+                # 3 - брат чёрный, правый ребёнок брата — красный, левый — чёрный
+                else:
+                    if brother is not None and self.is_black(brother.left) and self.is_red(brother.right):
+                        brother.right.colour = 'B'
+                        brother.colour = 'R'
+                        self.small_left_rotate(brother)
+                        brother = parent.left
+
+                    # 4 - брат чёрный, левый ребёнок брата — красный
+                    if brother is not None and self.is_red(brother.left):
+                        brother.colour = parent.colour
+                        parent.colour = 'B'
+                        brother.left.colour = 'B'
+                        self.small_right_rotate(parent)
+                        double_black = self.root
+
+        if double_black is not None:
+            double_black.colour = 'B'
+
