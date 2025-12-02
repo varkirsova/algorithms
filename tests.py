@@ -104,7 +104,7 @@ def run_all_experiments():
                "высота BST (случайные ключи)", bst_expect, is_bst=True)
 
     c, b, var = estimate_log_constant_simple(X, heights_bst[step - 1::step], log_base='e')
-    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
+    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f} ~ {c:.2f} {var}")
     print(f"из теории: h(n) ~ 4.311 ln(n)")
 
     # avl на случайных ключах
@@ -117,7 +117,7 @@ def run_all_experiments():
                "высота АВЛ дерева (случайные ключи)", avl_upper)
 
     c, b, var = estimate_log_constant_simple(X, heights_avl[step - 1::step], log_base='2')
-    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
+    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f} ~ {c:.2f} {var}")
     print(f"из теории: h(n) ≤ 1.44 log2(n)")
 
     # rb на случайных ключах
@@ -130,7 +130,7 @@ def run_all_experiments():
                "высота КЧ дерева (случайные ключи)", rb_upper)
 
     c, b, var = estimate_log_constant_simple(X, heights_rb[step - 1::step], log_base='2')
-    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
+    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f} ~ {c:.2f} {var}")
     print(f"из теории: h(n) ≤ 2.00 log2(n)")
 
     sorted_values = list(range(1, n + 1))
@@ -145,7 +145,7 @@ def run_all_experiments():
                "высота АВЛ дерева (отсортированные ключи)", avl_upper)
 
     c, b, var = estimate_log_constant_simple(X, heights_avl_sorted[step - 1::step], log_base='2')
-    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
+    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f} ~ {c:.2f} {var}")
     print(f"из теории: h(n) ≤ 1.44 log2(n)")
 
     # rb на отсортированных ключах
@@ -158,7 +158,7 @@ def run_all_experiments():
                "высота КЧ дерева (отсортированные ключи)", rb_upper)
 
     c, b, var = estimate_log_constant_simple(X, heights_rb_sorted[step - 1::step], log_base='2')
-    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
+    print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f} ~ {c:.2f} {var}")
     print(f"из теории: h(n) ≤ 2.00 log2(n)")
 
 run_all_experiments()
