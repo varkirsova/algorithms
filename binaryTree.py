@@ -581,4 +581,3 @@ class RBTree(BinaryTree):
 
         if double_black is not None:
             double_black.colour = 'B'
-
