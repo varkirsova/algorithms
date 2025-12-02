@@ -93,7 +93,7 @@ def run_all_experiments():
 
     rand_values = random.sample(range(1, n * 10), n)
 
-    # bst на случайных данных
+    # bst на случайных ключах
     print("\n1 Бинарное дерево поиска на случайных ключах")
     print("ожидаемая высота: ~4.311 ln(n)")
     print("верхняя граница: n")
@@ -107,7 +107,7 @@ def run_all_experiments():
     print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
     print(f"из теории: h(n) ~ 4.311 ln(n)")
 
-    # avl на случайных данных
+    # avl на случайных ключах
     print("\n2 АВЛ дерево на случайных ключах")
     print("верхняя граница: ≤ 1.44 log2(n)")
     print("нижняя граница: log2(n)")
@@ -120,14 +120,14 @@ def run_all_experiments():
     print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
     print(f"из теории: h(n) ≤ 1.44 log2(n)")
 
-    # rb на случайных данных
+    # rb на случайных ключах
     print("\n3 Красно черное дерево на случайных ключах")
     print("верхняя граница: ≤ 2.00 log2(n)")
     print("нижняя граница: log2(n)")
 
     heights_rb = experiment(RBTree, rand_values)
     draw_graph(X, heights_rb[step - 1::step],
-               "высота красно черного дерева (случайные ключи)", rb_upper)
+               "высота КЧ дерева (случайные ключи)", rb_upper)
 
     c, b, var = estimate_log_constant_simple(X, heights_rb[step - 1::step], log_base='2')
     print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
@@ -135,7 +135,7 @@ def run_all_experiments():
 
     sorted_values = list(range(1, n + 1))
 
-    # avl на отсортированных данных
+    # avl на отсортированных ключах
     print("\n4 АВЛ дерево на отсортированных ключах")
     print("верхняя граница: ≤ 1.44 log2(n) (гарантируется)")
     print("нижняя граница: log2(n)")
@@ -148,14 +148,14 @@ def run_all_experiments():
     print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
     print(f"из теории: h(n) ≤ 1.44 log2(n)")
 
-    # rb на отсортированных данных
+    # rb на отсортированных ключах
     print("\n5 Красно черное дерево на отсортированных ключах")
     print("верхняя граница: ≤ 2.00 log2(n)")
     print("нижняя граница: log2(n)")
 
     heights_rb_sorted = experiment(RBTree, sorted_values)
     draw_graph(X, heights_rb_sorted[step - 1::step],
-               "высота красно черного дерева (отсортированные ключи)", rb_upper)
+               "высота КЧ дерева (отсортированные ключи)", rb_upper)
 
     c, b, var = estimate_log_constant_simple(X, heights_rb_sorted[step - 1::step], log_base='2')
     print(f"по графику: h(n) ~ {c:.2f} {var} + {b:.2f}")
